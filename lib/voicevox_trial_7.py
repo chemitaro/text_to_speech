@@ -4,6 +4,7 @@ import wave
 import simpleaudio as sa
 import concurrent.futures
 import os
+import io
 
 def split_text(text, delimiters=("。", "．", ". ", "？", "? ", "！", "! ", "　", "\n")):
     result = [text]
@@ -14,7 +15,7 @@ def split_text(text, delimiters=("。", "．", ". ", "？", "? ", "！", "! ", "
         result = temp
     return result
 
-def generate_wav(text, speaker=19, filepath='./audio.wav'):
+def generate_wav(text, speaker=52, filepath='./audio.wav', silence_duration=0.1):
     host = '127.0.0.1'
     port = 50021
     params = (
@@ -33,14 +34,20 @@ def generate_wav(text, speaker=19, filepath='./audio.wav'):
         data=json.dumps(response1.json())
     )
 
-    wf = wave.open(filepath, 'wb')
-    wf.setnchannels(1)
-    wf.setsampwidth(2)
-    wf.setframerate(24000)
-    wf.writeframes(response2.content)
-    wf.close()
+    with wave.open(io.BytesIO(response2.content), 'rb') as input_wave:
+        framerate = input_wave.getframerate()
+        silence_frames = int(framerate * silence_duration)
 
-def generate_wav_async(text, speaker=19):
+        input_wave.readframes(silence_frames)
+        remaining_frames = input_wave.readframes(input_wave.getnframes() - silence_frames)
+
+        with wave.open(filepath, 'wb') as output_wave:
+            output_wave.setnchannels(input_wave.getnchannels())
+            output_wave.setsampwidth(input_wave.getsampwidth())
+            output_wave.setframerate(input_wave.getframerate())
+            output_wave.writeframes(remaining_frames)
+
+def generate_wav_async(text, speaker=52):
     filepath = f'./voicevox/audio_{hash(text)}.wav'
     generate_wav(text, speaker, filepath)
     return filepath
