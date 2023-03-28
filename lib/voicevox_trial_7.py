@@ -40,7 +40,7 @@ def generate_wav(text, speaker=19, filepath='./audio.wav'):
     wf.close()
 
 def generate_wav_async(text, speaker=19):
-    filepath = f'./audio_{hash(text)}.wav'
+    filepath = f'./voicevox/audio_{hash(text)}.wav'
     generate_wav(text, speaker, filepath)
     return filepath
 
