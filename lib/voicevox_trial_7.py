@@ -3,6 +3,7 @@ import requests
 import wave
 import simpleaudio as sa
 import concurrent.futures
+import os
 
 def split_text(text, delimiters=("。", "．", ". ", "？", "? ", "！", "! ", "　", "\n")):
     result = [text]
@@ -49,6 +50,12 @@ def play_audio(filepath):
     play_obj = wave_obj.play()
     play_obj.wait_done()
 
+def delete_files_in_directory(directory):
+    for filename in os.listdir(directory):
+        file_path = os.path.join(directory, filename)
+        if os.path.isfile(file_path):
+            os.remove(file_path)
+
 if __name__ == '__main__':
     while True:
         print("メッセージを入力してください")
@@ -66,3 +73,5 @@ if __name__ == '__main__':
 
         for audio_file_path in audio_file_paths:
             play_audio(audio_file_path)
+
+        delete_files_in_directory("./voicevox")
