@@ -4,8 +4,14 @@ import wave
 import simpleaudio as sa
 import concurrent.futures
 
-def split_text(text, delimiter="。"):
-    return [chunk + delimiter for chunk in text.split(delimiter) if chunk]
+def split_text(text, delimiters=("。", "．", ". ", "？", "? ", "！", "! ", "　", "\n")):
+    result = [text]
+    for delimiter in delimiters:
+        temp = []
+        for r in result:
+            temp.extend([s + delimiter for s in r.split(delimiter) if s])
+        result = temp
+    return result
 
 def generate_wav(text, speaker=19, filepath='./audio.wav'):
     host = '127.0.0.1'
