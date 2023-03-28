@@ -7,7 +7,7 @@ import concurrent.futures
 def split_text(text, delimiter="。"):
     return [chunk + delimiter for chunk in text.split(delimiter) if chunk]
 
-def generate_wav(text, speaker=1, filepath='./audio.wav'):
+def generate_wav(text, speaker=19, filepath='./audio.wav'):
     host = '127.0.0.1'
     port = 50021
     params = (
@@ -33,7 +33,7 @@ def generate_wav(text, speaker=1, filepath='./audio.wav'):
     wf.writeframes(response2.content)
     wf.close()
 
-def generate_wav_async(text, speaker=47):
+def generate_wav_async(text, speaker=19):
     filepath = f'./audio_{hash(text)}.wav'
     generate_wav(text, speaker, filepath)
     return filepath
