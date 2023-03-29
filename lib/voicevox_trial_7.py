@@ -47,8 +47,8 @@ def generate_wav(text, speaker=52, filepath='./audio.wav', silence_duration=0.1)
             output_wave.setframerate(input_wave.getframerate())
             output_wave.writeframes(remaining_frames)
 
-def generate_wav_async(text, speaker=52):
-    filepath = f'./voicevox/audio_{hash(text)}.wav'
+def generate_wav_async(text, speaker=52, directory='.'):
+    filepath = f"{directory}/audio_{hash(text)}.wav"
     generate_wav(text, speaker, filepath)
     return filepath
 
@@ -63,6 +63,26 @@ def delete_files_in_directory(directory):
         if os.path.isfile(file_path):
             os.remove(file_path)
 
+def text_to_voicevox(text, speaker=52):
+    """文字列を音声合成して再生する
+
+    :param text: 読み上げるテキスト
+    :type text: str
+    :param speaker: キャラクターナンバー, defaults to 52
+    :type speaker: int, optional
+    """
+    splitted_texts = split_text(text)
+
+    directory = "./voicevox"
+
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        audio_file_paths = list(executor.map(generate_wav_async, splitted_texts, [speaker] * len(splitted_texts), [directory] * len(splitted_texts)))
+
+    for audio_file_path in audio_file_paths:
+        play_audio(audio_file_path)
+
+    delete_files_in_directory(directory)
+
 if __name__ == '__main__':
     while True:
         print("メッセージを入力してください")
@@ -72,13 +92,4 @@ if __name__ == '__main__':
             break
 
         print(user_input)
-
-        splitted_texts = split_text(user_input)
-
-        with concurrent.futures.ThreadPoolExecutor() as executor:
-            audio_file_paths = list(executor.map(generate_wav_async, splitted_texts))
-
-        for audio_file_path in audio_file_paths:
-            play_audio(audio_file_path)
-
-        delete_files_in_directory("./voicevox")
+        text_to_voicevox(user_input)
