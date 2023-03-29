@@ -110,6 +110,16 @@ def text_to_voicevox(text, speaker=52):
 
     delete_files_in_directory(directory)
 
+def text_to_voicevox_async(text, speaker =52):
+    """文字列を音声合成して再生を非同期でバックグラウンドで行う
+
+    :param text: 読み上げるテキスト
+    :type text: str
+    :param speaker: キャラクターナンバー, defaults to 52
+    :type speaker: int, optional
+    """
+    threading.Thread(target=text_to_voicevox, args=(text, speaker,)).start()
+
 if __name__ == '__main__':
     while True:
         print("メッセージを入力してください")
@@ -119,4 +129,4 @@ if __name__ == '__main__':
             break
 
         print(user_input)
-        text_to_voicevox(user_input)
+        text_to_voicevox_async(user_input, 19)
