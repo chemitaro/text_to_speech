@@ -7,15 +7,21 @@ import threading
 import os
 import io
 import time
+import re
 
-def split_text(text, delimiters=("。", "、", "．", ". ", "？", "? ", "！", "! ", "　", "\n")):
-    result = [text]
-    for delimiter in delimiters:
-        temp = []
-        for r in result:
-            temp.extend([s + delimiter for s in r.split(delimiter) if s])
-        result = temp
-    return result
+def split_text(text, pattern=r"([。、．！？，\. ,! ,\? ,　,\n])"):
+    split_text = re.split(pattern, text)
+
+    # 区切り文字と分割されたテキストを交互に結合してリストに格納
+    split_result = []
+    for i in range(0, len(split_text) - 1, 2):
+        split_result.append(split_text[i] + split_text[i + 1])
+
+    # 最後の要素が区切り文字でない場合、結果に追加
+    if not re.fullmatch(pattern, split_text[-1]):
+        split_result.append(split_text[-1])
+
+    return split_result
 
 def split_text_and_filepaths(texts, directory='.'):
     result = []
