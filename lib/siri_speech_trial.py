@@ -1,4 +1,4 @@
-from text_to_siri import text_to_speech_async
+from text_to_siri import text_to_siri_async
 
 if __name__ == "__main__":
     while True:
@@ -9,4 +9,4 @@ if __name__ == "__main__":
             break
 
         print(user_input)
-        text_to_speech_async(user_input)
+        text_to_siri_async(user_input)
