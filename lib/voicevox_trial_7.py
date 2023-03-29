@@ -25,7 +25,6 @@ def split_text_and_filepaths(texts, directory='.'):
     return result
 
 def generate_wav(text, speaker=52, filepath='./audio.wav', silence_duration=0.1):
-    print("requesting...")
     host = '127.0.0.1'
     port = 50021
     params = (
@@ -43,7 +42,6 @@ def generate_wav(text, speaker=52, filepath='./audio.wav', silence_duration=0.1)
         params=params,
         data=json.dumps(response1.json())
     )
-    print("getting response!")
 
     with wave.open(io.BytesIO(response2.content), 'rb') as input_wave:
         framerate = input_wave.getframerate()
@@ -59,15 +57,17 @@ def generate_wav(text, speaker=52, filepath='./audio.wav', silence_duration=0.1)
             output_wave.writeframes(remaining_frames)
 
 def generate_wav_async(texts, speakers, filepaths):
-    with concurrent.futures.ThreadPoolExecutor() as executor:
-        list(executor.map(generate_wav, texts, speakers, filepaths))
+    with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
+        futures = []
+        for text, speaker, filepath in zip(texts, speakers, filepaths):
+            futures.append(executor.submit(generate_wav, text, speaker, filepath))
+            time.sleep(0.2)
 
 def play_audio(filepath):
     max_attempts = 100
     attempts = 0
 
     while not os.path.exists(filepath) and attempts < max_attempts:
-        print(f"seeking file... count: {attempts}")
         time.sleep(0.2)
         attempts += 1
 
