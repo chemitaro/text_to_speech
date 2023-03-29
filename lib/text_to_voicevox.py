@@ -9,6 +9,10 @@ import io
 import time
 import re
 
+def mkdir(directory):
+    if not os.path.exists(directory):
+        os.mkdir(directory)
+
 def split_text(text, pattern=r"([。、．！？，\. ,! ,\? ,　,\n])"):
     split_text = re.split(pattern, text)
 
@@ -91,16 +95,21 @@ def delete_files_in_directory(directory):
         if os.path.isfile(file_path):
             os.remove(file_path)
 
-def text_to_voicevox(text, speaker=52):
+def text_to_voicevox(text, speaker=52, directory="./voicevox_temp"):
     """文字列を音声合成して再生する
 
     :param text: 読み上げるテキスト
     :type text: str
     :param speaker: キャラクターナンバー, defaults to 52
     :type speaker: int, optional
+    :param directory: 一時ファイルを保存するディレクトリ, defaults to "./voicevox"
+    :type directory: str, optional
     """
     splitted_texts = split_text(text)
-    directory = "./voicevox"
+
+    # directory の存在を確認し、存在しない場合は作成する
+    mkdir(directory)
+
     text_and_filepaths = split_text_and_filepaths(splitted_texts, directory)
 
     texts = [d['text'] for d in text_and_filepaths]
@@ -116,12 +125,14 @@ def text_to_voicevox(text, speaker=52):
 
     delete_files_in_directory(directory)
 
-def text_to_voicevox_async(text, speaker =52):
+def text_to_voicevox_async(text, speaker =52, directory="./voicevox"):
     """文字列を音声合成して再生を非同期でバックグラウンドで行う
 
     :param text: 読み上げるテキスト
     :type text: str
     :param speaker: キャラクターナンバー, defaults to 52
     :type speaker: int, optional
+    :param directory: 一時ファイルを保存するディレクトリ, defaults to "./voicevox"
+    :type directory: str, optional
     """
     threading.Thread(target=text_to_voicevox, args=(text, speaker,)).start()
