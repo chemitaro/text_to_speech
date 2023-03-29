@@ -15,6 +15,13 @@ def split_text(text, delimiters=("。", "．", ". ", "？", "? ", "！", "! ", "
         result = temp
     return result
 
+def split_text_and_filepaths(texts, directory='.'):
+    result = []
+    for text in texts:
+        filepath = f'{directory}/audio_{hash(text)}.wav'
+        result.append({'text': text, 'filepath': filepath})
+    return result
+
 def generate_wav(text, speaker=52, filepath='./audio.wav', silence_duration=0.1):
     host = '127.0.0.1'
     port = 50021
@@ -47,11 +54,6 @@ def generate_wav(text, speaker=52, filepath='./audio.wav', silence_duration=0.1)
             output_wave.setframerate(input_wave.getframerate())
             output_wave.writeframes(remaining_frames)
 
-def generate_wav_async(text, speaker=52, directory='.'):
-    filepath = f"{directory}/audio_{hash(text)}.wav"
-    generate_wav(text, speaker, filepath)
-    return filepath
-
 def play_audio(filepath):
     wave_obj = sa.WaveObject.from_wave_file(filepath)
     play_obj = wave_obj.play()
@@ -72,13 +74,17 @@ def text_to_voicevox(text, speaker=52):
     :type speaker: int, optional
     """
     splitted_texts = split_text(text)
-
     directory = "./voicevox"
+    text_and_filepaths = split_text_and_filepaths(splitted_texts, directory)
+
+    texts = [d['text'] for d in text_and_filepaths]
+    filepaths = [d['filepath'] for d in text_and_filepaths]
+    speakers = [speaker] * len(text_and_filepaths)
 
     with concurrent.futures.ThreadPoolExecutor() as executor:
-        audio_file_paths = list(executor.map(generate_wav_async, splitted_texts, [speaker] * len(splitted_texts), [directory] * len(splitted_texts)))
+        list(executor.map(generate_wav, texts, speakers, filepaths))
 
-    for audio_file_path in audio_file_paths:
+    for audio_file_path in filepaths:
         play_audio(audio_file_path)
 
     delete_files_in_directory(directory)
