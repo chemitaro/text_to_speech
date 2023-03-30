@@ -13,6 +13,22 @@ def mkdir(directory):
     if not os.path.exists(directory):
         os.mkdir(directory)
 
+def silence_code(text):
+    """コードブロックの中身を音声合成しないようにするため、'コードは省略'に置換する
+
+    :param text: 読み上げるテキスト
+    :type text: str
+    """
+    return re.sub(r'```.*?```', 'コードは省略。', text, flags=re.DOTALL)
+
+def silence_url(text):
+    """URLを音声合成しないようにするため、'URL'に置換する
+
+    :param text: 読み上げるテキスト
+    :type text: str
+    """
+    return re.sub(r'https?://[\w/:%#\$&\?\(\)~\.=\+\-]+', 'URL', text)
+
 def split_text(text, pattern=r"([。、．！？，\. ,! ,\? ,　,\n])"):
     split_text = re.split(pattern, text)
 
@@ -105,6 +121,8 @@ def text_to_voicevox(text, speaker=52, directory="./voicevox_temp"):
     :param directory: 一時ファイルを保存するディレクトリ, defaults to "./voicevox"
     :type directory: str, optional
     """
+    text = silence_code(text)
+    text = silence_url(text)
     splitted_texts = split_text(text)
 
     # directory の存在を確認し、存在しない場合は作成する
