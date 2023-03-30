@@ -8,7 +8,7 @@ import os
 import io
 import time
 import re
-from preprocess import omit_code, omit_url
+from .preprocess import omit_code, omit_url
 
 def mkdir(directory):
     if not os.path.exists(directory):
@@ -128,7 +128,7 @@ def text_to_voicevox(text, speaker=52, directory="./voicevox_temp"):
 
     delete_files_in_directory(directory)
 
-def text_to_voicevox_async(text, speaker =52, directory="./voicevox"):
+def text_to_voicevox_async(text, speaker=52, directory="./voicevox"):
     """文字列を音声合成して再生を非同期でバックグラウンドで行う
 
     :param text: 読み上げるテキスト

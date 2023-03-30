@@ -1,6 +1,6 @@
 import subprocess
 import threading
-from preprocess import omit_code, omit_url
+from .preprocess import omit_code, omit_url
 
 def text_to_siri(text):
     # sayコマンドを使用して、別プロセスで音声を読み上げる
