@@ -12,7 +12,7 @@ def omit_code(text):
     return re.sub(r'```.*?```', 'コードは省略。', text, flags=re.DOTALL)
 
 def omit_url(text):
-    """URLを音声合成しないようにするため、'URL'に置換する
+    """URLを音声合成しないようにするため、'URLは省略。'に置換する
 
     :param text: 読み上げるテキスト
     :type text: str
