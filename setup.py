@@ -5,8 +5,11 @@ setup(
     version="0.1",
     packages=find_packages(),
     install_requires=[
-        "subprocess", "threading", "re", "json", "requests", "wave", "simpleaudio", "concurrent", "os", "io", "time"
+        "requests",
+        "wave",
+        "simpleaudio",
     ],
+
     classifiers=[
         "Development Status :: 3 - Alpha",
         "License :: OSI Approved :: MIT License",
